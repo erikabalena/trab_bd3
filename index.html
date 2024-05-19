@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Firestore Example</title>
+    <!-- Inclua os scripts do Firebase 8.x -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+</head>
+<body>
+    <h1>Firestore Example</h1>
+    <form id="addObjectForm">
+        <input type="text" id="name" placeholder="Name" required>
+        <input type="text" id="ra" placeholder="RA" required>
+        <button type="submit">Add Object</button>
+    </form>
+    <h2>Objects List</h2>
+    <ul id="objectsList"></ul>
+
+    <script>
+        // Configuração do Firebase do seu projeto
+        const firebaseConfig = {
+            apiKey: "AIzaSyA4tHKWEA5xVMGGzb_Sjf1IHv94uDy5bxA",
+            authDomain: "trabalhowagner.firebaseapp.com",
+            projectId: "trabalhowagner",
+            storageBucket: "trabalhowagner.appspot.com",
+            messagingSenderId: "804019011174",
+            appId: "1:804019011174:web:8c45353560fb3719f937a7"
+        };
+
+        // Inicializar o Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Referência à coleção do Firestore
+        const collectionRef = db.collection('objects');
+
+        // Adicionar objeto ao Firestore
+        document.getElementById('addObjectForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const ra = document.getElementById('ra').value;
+
+            collectionRef.add({ name, ra })
+                .then(() => {
+                    alert('Object added successfully!');
+                    document.getElementById('addObjectForm').reset();
+                    fetchObjects();
+                })
+                .catch((error) => {
+                    console.error('Error adding object: ', error);
+                });
+        });
+
+        // Buscar e exibir objetos do Firestore
+        const fetchObjects = () => {
+            collectionRef.get()
+                .then((querySnapshot) => {
+                    const objectsList = document.getElementById('objectsList');
+                    objectsList.innerHTML = '';
+                    querySnapshot.forEach((doc) => {
+                        const li = document.createElement('li');
+                        li.textContent = `Name: ${doc.data().name}, RA: ${doc.data().ra}`;
+                        objectsList.appendChild(li);
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error fetching objects: ', error);
+                });
+        };
+
+        // Buscar objetos inicialmente
+        fetchObjects();
+    </script>
+</body>
+</html>
